@@ -1,40 +1,47 @@
 package main
 
 import (
+	"context"
 	"os"
 
-	models "main/Models"
+	database "main/database"
 	envs "main/env"
-
-	"github.com/kamva/mgm/v3"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-	env := os.Args[1]
+	var shouldSeed string
 	var config []string
-
+	env := os.Args[1]
+	if len(os.Args) > 2 {
+		shouldSeed = os.Args[2]
+	}
 	if env != "local" {
 		config = envs.EnvConfig("deployedConfig")
 	} else {
 		config = envs.EnvConfig("localConfig")
 	}
+	client := database.DatabaseConnector(config)
+	defer client.Disconnect(context.Background())
 
-	var dbCredentials = options.Credential{
-		AuthMechanism: "SCRAM-SHA-1",
-		AuthSource:    config[1],
-		Username:      config[2],
-		Password:      config[3],
-		PasswordSet:   true,
-	}
-	_ = mgm.SetDefaultConfig(nil, "loyalty-be-db", options.Client().ApplyURI(config[0]).SetAuth(dbCredentials))
+	if shouldSeed == "seed" {
+		database.Seeder(env, client)
+	} else {
+		// if env != "local" {
+		// 	config = envs.EnvConfig("deployedConfig")
+		// } else {
+		// 	config = envs.EnvConfig("localConfig")
+		// }
 
-	x := models.User{
-		Username:    "SolidStojanXXX",
-		Password:    "Test123",
-		Name:        "Stole",
-		DateOfBirth: "12-03-1999",
+		// var db *mongo.Database
+		// var ctx context.Context
+		// var cancel context.CancelFunc
+		// var client *mongo
+		//initialize database and context
+		client := database.DatabaseConnector(config)
+		// defer cancel()
+		// client = dataLayer.InitDataLayer()
+		defer client.Disconnect(context.Background())
+		// fmt.Println(db, ctx)
 	}
-	models.CreateUser(&x)
-	// models.DeleteUser(&x)
+
 }

@@ -3,7 +3,6 @@ module main
 go 1.19
 
 require (
-	github.com/kamva/mgm/v3 v3.5.0
 	go.mongodb.org/mongo-driver v1.11.1
 )
 
