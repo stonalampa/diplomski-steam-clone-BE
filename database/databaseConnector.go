@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,7 +17,7 @@ import (
 * config[3] - dbPassword
  */
 // func DatabaseConnector(config []string) (*mongo.Database, context.Context, context.CancelFunc) {
-func DatabaseConnector(config []string) *mongo.Client {
+func DatabaseConnector(config []string) *mongo.Database {
 	var dbCredentials = options.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
 		AuthSource:    config[1],
@@ -27,23 +28,10 @@ func DatabaseConnector(config []string) *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config[0]).SetAuth((dbCredentials)))
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
-	return client
-	// return client.Database(config[1]), ctx, cancel
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Connected to database")
+	}
+	return client.Database(config[1])
 }
-
-// func InitDataLayer() *mongo.Client {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	defer cancel()
-// 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(credentials.MONGO_DB_ATLAS_URI))
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	} else {
-// 		log.Println("Connected to Database")
-// 	}
-// 	return client
-// }

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"os"
 
-	database "main/database"
 	envs "main/env"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,12 +21,21 @@ func main() {
 	} else {
 		config = envs.EnvConfig("localConfig")
 	}
-	client := database.DatabaseConnector(config)
-	defer client.Disconnect(context.Background())
+
+	// client := database.DatabaseConnector(config)
+	// defer client.Disconnect(context.Background())
 
 	if shouldSeed == "seed" {
-		database.Seeder(env, client)
+		// ctx := context.TODO()
+		// fmt.Print("OVDE JE@@\n")
+		// database.Seeder(env, client, ctx)
 	} else {
+		fmt.Print(config)
+		r := gin.Default()
+		r.GET("", func(c *gin.Context) {
+			c.String(200, "Welcome to Go and Gin!")
+		})
+		r.Run(":3030")
 		// if env != "local" {
 		// 	config = envs.EnvConfig("deployedConfig")
 		// } else {
@@ -37,10 +47,10 @@ func main() {
 		// var cancel context.CancelFunc
 		// var client *mongo
 		//initialize database and context
-		client := database.DatabaseConnector(config)
+		// client := database.DatabaseConnector(config)
 		// defer cancel()
 		// client = dataLayer.InitDataLayer()
-		defer client.Disconnect(context.Background())
+		// defer client.Disconnect(context.Background())
 		// fmt.Println(db, ctx)
 	}
 
