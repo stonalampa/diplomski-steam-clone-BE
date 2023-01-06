@@ -1,0 +1,5 @@
+#database config
+  connectionString: mongodb://db_user:test123@localhost:27017
+  name: loyalty-be-db
+  username: db_user
+  password: test123
