@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"main/seeds"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -55,13 +57,17 @@ func main() {
 	configLocation := "./env/" + env + ".yaml"
 	viper.SetConfigFile(configLocation)
 	viper.Set("env", env)
-	viper.Set("seed", seed)
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
+	seedBoolean, booleanErr := strconv.ParseBool(seed)
+	if booleanErr != nil {
+		log.Fatal(booleanErr)
+	}
+	viper.Set("seed", seedBoolean)
+	configError := viper.ReadInConfig()
+	if configError != nil {
+		panic(fmt.Errorf("fatal error config file: %w", configError))
 	}
 
-	// * Connect to db, create repository
+	//* Connect and create db
 	var dbCredentials = options.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
 		AuthSource:    viper.GetString("name"),
@@ -69,18 +75,21 @@ func main() {
 		Password:      viper.GetString("password"),
 		PasswordSet:   true,
 	}
-	// create a database connection
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(viper.GetString("connectionString")).SetAuth((dbCredentials)))
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := client.Connect(context.TODO()); err != nil {
-		log.Fatal(err)
-	}
+	db := client.Database(viper.GetString("name"))
 
-	// repository := repository.NewRepository(client.Database(viper.GetString("name")))
+	if viper.GetBool("seed") == true {
+		seeds.Seeder(db)
+	} else {
+		//RUN SERVER
+	}
 
 	// * Connect to server
 	// client := database.DatabaseConnector(config)

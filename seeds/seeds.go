@@ -1,13 +1,13 @@
-package database
+package seeds
 
 import (
-	models "main/models"
+	repo "main/repository"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var users = []models.User{
+var users = []repo.User{
 	{
 		ID:          primitive.NewObjectID(),
 		Email:       "test1@email.com",
@@ -41,6 +41,5 @@ var users = []models.User{
 }
 
 var Seeds = map[string]any{
-	"Users":   users,
-	"neUsers": users,
+	"Users": users,
 }
