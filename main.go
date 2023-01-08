@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"main/repository"
 	"main/seeds"
+	"main/service"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -88,40 +91,15 @@ func main() {
 	if viper.GetBool("seed") == true {
 		seeds.Seeder(db)
 	} else {
-		//RUN SERVER
+		// * Connect to server and create gin router
+		repo := repository.NewUserRepository(db)
+		userService := service.NewUserService(repo)
+
+		router := gin.Default()
+		{
+			router.POST("/users", userService.CreateUser)
+		}
+
+		router.Run(":3030")
 	}
-
-	// * Connect to server
-	// client := database.DatabaseConnector(config)
-	// defer client.Disconnect(context.Background())
-
-	// if shouldSeed == "seed" {
-	// 	// ctx := context.TODO()
-	// 	// fmt.Print("OVDE JE@@\n")
-	// 	// database.Seeder(env, client, ctx)
-	// } else {
-	// 	fmt.Print(config)
-	// 	r := gin.Default()
-	// 	r.GET("", func(c *gin.Context) {
-	// 		c.String(200, "Welcome to Go and Gin!")
-	// 	})
-	// 	r.Run(":3030")
-	// if env != "local" {
-	// 	config = envs.EnvConfig("deployedConfig")
-	// } else {
-	// 	config = envs.EnvConfig("localConfig")
-	// }
-
-	// var db *mongo.Database
-	// var ctx context.Context
-	// var cancel context.CancelFunc
-	// var client *mongo
-	//initialize database and context
-	// client := database.DatabaseConnector(config)
-	// defer cancel()
-	// client = dataLayer.InitDataLayer()
-	// defer client.Disconnect(context.Background())
-	// fmt.Println(db, ctx)
-	// }
-
 }
