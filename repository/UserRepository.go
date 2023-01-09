@@ -25,6 +25,9 @@ func NewUserRepository(db *mongo.Database) UserRepository {
 	return &userRepository{db: db}
 }
 
+//podaci o useru
+// payment card podaci, to isto enkriptuj i dekriptuj kada vratis iz baze mada i ne mora realno me boli q
+//
 type User struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	Username    string             `json:"username" bson:"username"`
