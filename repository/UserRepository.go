@@ -16,7 +16,7 @@ var (
 )
 
 type UserRepository interface {
-	CreateUser(ctx context.Context, user *User) *mongo.InsertOneResult
+	CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error)
 	DropUsers(ctx context.Context) bool
 }
 
@@ -39,15 +39,9 @@ type User struct {
 	UpdatedAt   time.Time          `bson:"updated_at"`
 }
 
-func (repo *userRepository) CreateUser(ctx context.Context, user *User) *mongo.InsertOneResult {
+func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error) {
 	result, err := repo.db.Collection("users").InsertOne(ctx, user)
-	if err != nil {
-		panic(err)
-	}
-	if r := recover(); r != nil {
-		fmt.Println("Recovered!")
-	}
-	return result
+	return result, err
 }
 
 func (repo *userRepository) DropUsers(ctx context.Context) bool {

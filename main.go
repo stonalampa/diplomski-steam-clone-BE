@@ -7,11 +7,13 @@ import (
 	"main/repository"
 	"main/seeds"
 	"main/service"
+	"main/utils"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,9 +24,9 @@ var (
 	env     string
 	seed    string
 	rootCmd = &cobra.Command{
-		Use:       "seed",
-		Short:     "If TRUE it will run seeding.",
-		Long:      "If TRUE the seeding will be done, if FALSE the program will run normally.",
+		Use:       "EnvSeed",
+		Short:     "Checks env and seed flags",
+		Long:      "Checks if the env is local or deployed. Check if the seeds or the server should be run.",
 		ValidArgs: []string{"true", "false", "local", "deployment"},
 		Args:      matchAll(cobra.MinimumNArgs(2), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -70,7 +72,7 @@ func main() {
 		panic(fmt.Errorf("fatal error config file: %w", configError))
 	}
 
-	//* Connect and create db
+	//* Connect to db
 	var dbCredentials = options.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
 		AuthSource:    viper.GetString("name"),
@@ -91,13 +93,31 @@ func main() {
 	if viper.GetBool("seed") == true {
 		seeds.Seeder(db)
 	} else {
-		// * Connect to server and create gin router
 		repo := repository.NewUserRepository(db)
 		userService := service.NewUserService(repo)
 
+		//* Create gin router and set trusted proxy
 		router := gin.Default()
+		router.SetTrustedProxies([]string{"192.168.0.1"})
+
+		//* Add CORS config to router
+		router.Use(cors.Middleware(cors.Config{
+			Origins:         "http://files.server.com",
+			Methods:         "GET, PUT, DELETE, POST, OPTIONS",
+			RequestHeaders:  "Origin, Authorization, Content-Type",
+			ExposedHeaders:  "",
+			MaxAge:          50 * time.Second,
+			Credentials:     true,
+			ValidateHeaders: true,
+		}))
+
+		//* Defined public and private (uses JWT auth) router groups and endpoints
+		publicGroup := router.Group("/api")
+		privateGroup := router.Group("/api")
+		privateGroup.Use(utils.ValidateJwt)
 		{
-			router.POST("/users", userService.CreateUser)
+			publicGroup.GET("/users", userService.GetUser)
+			privateGroup.POST("/users", userService.CreateUser)
 		}
 
 		router.Run(":3030")
