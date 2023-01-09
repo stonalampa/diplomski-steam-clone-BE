@@ -11,6 +11,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+type UnsignedResponse struct {
+	Message interface{} `json:"message"`
+}
 type authCustomClaims struct {
 	Email    string `json:"email"`
 	LoggedIn bool   `json:"LoggedIn"`
@@ -32,7 +35,7 @@ func ValidateJwt(c *gin.Context) {
 	token, err := parseToken(jwtToken)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, UnsignedResponse{
-			Message: "bad jwt token",
+			Message: "Bad JWT token",
 		})
 		return
 	}
@@ -40,7 +43,7 @@ func ValidateJwt(c *gin.Context) {
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, UnsignedResponse{
-			Message: "unable to parse claims",
+			Message: "Unable to parse claims",
 		})
 		return
 	}
@@ -49,12 +52,12 @@ func ValidateJwt(c *gin.Context) {
 
 func extractBearerToken(header string) (string, error) {
 	if header == "" {
-		return "", errors.New("bad header value given")
+		return "", errors.New("Bad header value given")
 	}
 
 	jwtToken := strings.Split(header, " ")
 	if len(jwtToken) != 2 {
-		return "", errors.New("incorrectly formatted authorization header")
+		return "", errors.New("Incorrectly formatted authorization header")
 	}
 
 	return jwtToken[1], nil
@@ -63,19 +66,20 @@ func extractBearerToken(header string) (string, error) {
 func parseToken(jwtToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		if _, OK := token.Method.(*jwt.SigningMethodHMAC); !OK {
-			return nil, errors.New("bad signed method received")
+			return nil, errors.New("Bad signed method received")
 		}
 		return []byte(secret), nil
 	})
 
 	if err != nil {
-		return nil, errors.New("bad jwt token")
+		return nil, errors.New("Bad jwt token")
 	}
 
 	return token, nil
 }
 
 func GenerateToken(email string, loggedIn bool) string {
+	//* If development env generate a token that won't expire otherwise it is valid for 2 days
 	env := viper.GetString("env")
 	var expiresAt int64
 	if env == "local" {
@@ -95,10 +99,9 @@ func GenerateToken(email string, loggedIn bool) string {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	//encoded string
-	t, err := token.SignedString([]byte(secret))
+	signedToken, err := token.SignedString([]byte(secret))
 	if err != nil {
 		panic(err)
 	}
-	return t
+	return signedToken
 }

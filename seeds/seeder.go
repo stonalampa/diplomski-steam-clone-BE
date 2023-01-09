@@ -15,6 +15,7 @@ func Seeder(db *mongo.Database) {
 			fmt.Printf("Inserting values for type: %s\n", key)
 			repo := repo.NewUserRepository(db)
 			repo.DropUsers(context.TODO())
+			repo.CreateIndices(context.TODO())
 			for i := 0; i < len(users); i++ {
 				repo.CreateUser(context.TODO(), &users[i])
 			}

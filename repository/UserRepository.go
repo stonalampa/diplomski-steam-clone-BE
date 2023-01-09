@@ -2,22 +2,19 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-)
-
-var (
-	ErrUserNotFound = errors.New("user not found")
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error)
-	DropUsers(ctx context.Context) bool
+	DropUsers(ctx context.Context)
+	CreateIndices(ctx context.Context)
 }
 
 type userRepository struct {
@@ -44,13 +41,37 @@ func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.
 	return result, err
 }
 
-func (repo *userRepository) DropUsers(ctx context.Context) bool {
+func (repo *userRepository) FindUsers(ctx context.Context) ([]User, error) {
+
+}
+
+func (repo *userRepository) GetUser(ctx context.Context, email string) (User, error) {
+
+}
+
+func (repo *userRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateOneModel, error) {
+
+}
+
+func (repo *userRepository) DeleteUser(ctx context.Context, email) (*mongo.DeleteResult, error) {
+
+}
+
+func (repo *userRepository) DropUsers(ctx context.Context) {
 	_, err := repo.db.Collection("users").DeleteMany(ctx, bson.D{})
 	if err != nil {
 		panic(err)
 	}
-	if r := recover(); r != nil {
-		fmt.Println("Recovered!")
+}
+
+func (repo *userRepository) CreateIndices(ctx context.Context) {
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
 	}
-	return true
+	name, err := repo.db.Collection("users").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Name of Index Created: " + name)
 }

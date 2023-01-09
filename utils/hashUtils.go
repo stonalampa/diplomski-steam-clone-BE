@@ -13,7 +13,3 @@ func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
-
-type UnsignedResponse struct {
-	Message interface{} `json:"message"`
-}
