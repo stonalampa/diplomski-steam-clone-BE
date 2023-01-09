@@ -25,9 +25,8 @@ func NewUserRepository(db *mongo.Database) UserRepository {
 	return &userRepository{db: db}
 }
 
-//podaci o useru
+// podaci o useru
 // payment card podaci, to isto enkriptuj i dekriptuj kada vratis iz baze mada i ne mora realno me boli q
-//
 type User struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	Username    string             `json:"username" bson:"username"`
@@ -44,21 +43,21 @@ func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.
 	return result, err
 }
 
-func (repo *userRepository) FindUsers(ctx context.Context) ([]User, error) {
+// func (repo *userRepository) FindUsers(ctx context.Context) ([]User, error) {
 
-}
+// }
 
-func (repo *userRepository) GetUser(ctx context.Context, email string) (User, error) {
+// func (repo *userRepository) GetUser(ctx context.Context, email string) (User, error) {
 
-}
+// }
 
-func (repo *userRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateOneModel, error) {
+// func (repo *userRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateOneModel, error) {
 
-}
+// }
 
-func (repo *userRepository) DeleteUser(ctx context.Context, email) (*mongo.DeleteResult, error) {
+// func (repo *userRepository) DeleteUser(ctx context.Context, email) (*mongo.DeleteResult, error) {
 
-}
+// }
 
 func (repo *userRepository) DropUsers(ctx context.Context) {
 	_, err := repo.db.Collection("users").DeleteMany(ctx, bson.D{})
