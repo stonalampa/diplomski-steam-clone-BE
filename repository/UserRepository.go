@@ -25,17 +25,23 @@ func NewUserRepository(db *mongo.Database) UserRepository {
 	return &userRepository{db: db}
 }
 
-// podaci o useru
-// payment card podaci, to isto enkriptuj i dekriptuj kada vratis iz baze mada i ne mora realno me boli q
 type User struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Username    string             `json:"username" bson:"username"`
-	Email       string             `json:"email" bson:"email"`
-	Password    string             `json:"password" bson:"password"`
-	Name        string             `json:"name" bson:"name"`
-	DateOfBirth string             `json:"dateOfBirth" bson:"dateOfBirth"`
-	CreatedAt   time.Time          `bson:"created_at"`
-	UpdatedAt   time.Time          `bson:"updated_at"`
+	ID           primitive.ObjectID `bson:"_id"`
+	Username     string             `json:"username" bson:"username"`
+	Email        string             `json:"email" bson:"email"`
+	Password     string             `json:"password" bson:"password"`
+	Name         string             `json:"name" bson:"name"`
+	DateOfBirth  string             `json:"dateOfBirth" bson:"dateOfBirth"`
+	IsAdmin      bool               `json:"isAdmin" bson:"isAdmin"`
+	PaymentCards []PaymentCard      `json:"paymentCards" bson:"paymentCards"`
+	CreatedAt    time.Time          `bson:"created_at"`
+	UpdatedAt    time.Time          `bson:"updated_at"`
+}
+
+type PaymentCard struct {
+	CardNumber string
+	ExpDate    string
+	Cvc        int
 }
 
 func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error) {

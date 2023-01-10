@@ -1,7 +1,10 @@
 package repository
 
-//Veza izmedju usera i igara tacnije koje su mu igre u library-u tj koje poseduje user ima listu id-eva igrica
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
-//user id
-//[]game id
-//wishlist -> []game id
+type LibraryRecord struct {
+	ID          primitive.ObjectID   `bson:"_id"`
+	UserId      primitive.ObjectID   `json:"userId" bson:"userId"`
+	GameIds     []primitive.ObjectID `json:"gameIds" bson:"gameIds"`
+	WishlistIds []primitive.ObjectID `json:"wishlistIds" bson:"wishlistIds"`
+}
