@@ -27,10 +27,12 @@ func NewGamesRepository(db *mongo.Database) GamesRepository {
 
 type Game struct {
 	ID              primitive.ObjectID `bson:"_id"`
-	Title           string             `json:"userId" bson:"userId"`
-	Price           float32            `json:"gameId" bson:"gameId"`
-	Description     string             `json:"comment" bson:"comment"`
-	Score           float32            `json:"score" bson:"score"`
+	Title           string             `json:"title" bson:"title"`
+	Price           float32            `json:"price" bson:"price"`
+	Developer       string             `json:"developer" bson:"developer"`
+	Publisher       string             `json:"publisher" bson:"publisher"`
+	Description     string             `json:"description" bson:"description"`
+	Score           int                `json:"score" bson:"score"`
 	NumberOfScores  int                `json:"numberOfScores" bson:"numberOfScores"`
 	Screenshots     []string           `json:"screenshots" bson:"screenshots"`
 	Discount        float32            `json:"discount" bson:"discount"`
