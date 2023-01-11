@@ -11,18 +11,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type UserRepository interface {
+type UsersRepository interface {
 	CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error)
 	DropUsers(ctx context.Context)
 	CreateIndices(ctx context.Context)
 }
 
-type userRepository struct {
+type usersRepository struct {
 	db *mongo.Database
 }
 
-func NewUserRepository(db *mongo.Database) UserRepository {
-	return &userRepository{db: db}
+func NewUsersRepository(db *mongo.Database) UsersRepository {
+	return &usersRepository{db: db}
 }
 
 type User struct {
@@ -44,7 +44,7 @@ type PaymentCard struct {
 	Cvc        int
 }
 
-func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error) {
+func (repo *usersRepository) CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error) {
 	result, err := repo.db.Collection("users").InsertOne(ctx, user)
 	return result, err
 }
@@ -65,14 +65,14 @@ func (repo *userRepository) CreateUser(ctx context.Context, user *User) (*mongo.
 
 // }
 
-func (repo *userRepository) DropUsers(ctx context.Context) {
+func (repo *usersRepository) DropUsers(ctx context.Context) {
 	_, err := repo.db.Collection("users").DeleteMany(ctx, bson.D{})
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (repo *userRepository) CreateIndices(ctx context.Context) {
+func (repo *usersRepository) CreateIndices(ctx context.Context) {
 	indexModel := mongo.IndexModel{
 		Keys:    bson.D{{Key: "email", Value: 1}},
 		Options: options.Index().SetUnique(true),

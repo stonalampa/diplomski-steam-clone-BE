@@ -11,11 +11,11 @@ import (
 )
 
 type Service struct {
-	userRepository repository.UserRepository
+	usersRepository repository.UsersRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) *Service {
-	return &Service{userRepository: userRepository}
+func NewUsersService(usersRepository repository.UsersRepository) *Service {
+	return &Service{usersRepository: usersRepository}
 }
 
 func (s Service) CreateUser(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func (s Service) CreateUser(ctx *gin.Context) {
 	user.UpdatedAt = time.Now()
 	user.Password = hashedPass
 
-	insertedUser, err := s.userRepository.CreateUser(ctx, &user)
+	insertedUser, err := s.usersRepository.CreateUser(ctx, &user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return

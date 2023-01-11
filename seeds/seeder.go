@@ -22,7 +22,7 @@ func Seeder(db *mongo.Database) {
 		switch v := element.(type) {
 		case []repo.User:
 			printMessage(key)
-			repo := repo.NewUserRepository(db)
+			repo := repo.NewUsersRepository(db)
 			repo.DropUsers(context.TODO())
 			repo.CreateIndices(context.TODO())
 			for i := 0; i < len(users); i++ {
@@ -30,10 +30,28 @@ func Seeder(db *mongo.Database) {
 			}
 		case []repo.Game:
 			printMessage(key)
+			repo := repo.NewGamesRepository(db)
+			repo.DropGames(context.TODO())
+			repo.CreateIndices(context.TODO())
+			for i := 0; i < len(games); i++ {
+				repo.CreateGame(context.TODO(), &games[i])
+			}
 		case []repo.LibraryRecord:
 			printMessage(key)
+			repo := repo.NewLibraryRepository(db)
+			repo.DropLibraryRecords(context.TODO())
+			repo.CreateIndices(context.TODO())
+			for i := 0; i < len(libraryRecords); i++ {
+				repo.CreateLibraryRecord(context.TODO(), &libraryRecords[i])
+			}
 		case []repo.Review:
 			printMessage(key)
+			repo := repo.NewReviewsRepository(db)
+			repo.DropReviews(context.TODO())
+			repo.CreateIndices(context.TODO())
+			for i := 0; i < len(reviews); i++ {
+				repo.CreateReview(context.TODO(), &reviews[i])
+			}
 		default:
 			fmt.Printf("Unknown type %T!\n", v)
 		}

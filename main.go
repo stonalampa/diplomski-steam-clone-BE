@@ -93,8 +93,8 @@ func main() {
 	if viper.GetBool("seed") == true {
 		seeds.Seeder(db)
 	} else {
-		repo := repository.NewUserRepository(db)
-		userService := service.NewUserService(repo)
+		repo := repository.NewUsersRepository(db)
+		userService := service.NewUsersService(repo)
 
 		//* Create gin router and set trusted proxy
 		router := gin.Default()
