@@ -12,6 +12,9 @@ import (
 
 type LibraryRepository interface {
 	CreateLibraryRecord(ctx context.Context, libraryRecord *LibraryRecord) (*mongo.InsertOneResult, error)
+	GetLibraryRecord(ctx context.Context, id primitive.ObjectID) (LibraryRecord, error)
+	UpdateLibraryRecord(ctx context.Context, data LibraryRecord) (*mongo.UpdateResult, error)
+	DeleteLibraryRecord(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropLibraryRecords(ctx context.Context)
 	CreateIndices(ctx context.Context)
 }
@@ -36,6 +39,34 @@ func (repo *libraryRepository) CreateLibraryRecord(ctx context.Context, libraryR
 	return result, err
 }
 
+func (repo *libraryRepository) GetLibraryRecord(ctx context.Context, id primitive.ObjectID) (LibraryRecord, error) {
+	var libRecord LibraryRecord
+	filter := bson.D{primitive.E{Key: "_id", Value: id}}
+	err := repo.db.Collection("library").FindOne(ctx, filter).Decode(&libRecord)
+	if err != nil {
+		return LibraryRecord{}, err
+	}
+
+	return libRecord, nil
+}
+
+func (repo *libraryRepository) UpdateLibraryRecord(ctx context.Context, data LibraryRecord) (*mongo.UpdateResult, error) {
+	res, err := repo.db.Collection("library").UpdateByID(ctx, data.ID, data)
+	if err != nil {
+		return &mongo.UpdateResult{}, err
+	}
+
+	return res, nil
+}
+
+func (repo *libraryRepository) DeleteLibraryRecord(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	res, err := repo.db.Collection("library").DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		return &mongo.DeleteResult{}, err
+	}
+	return res, nil
+}
+
 func (repo *libraryRepository) DropLibraryRecords(ctx context.Context) {
 	_, err := repo.db.Collection("library").DeleteMany(ctx, bson.D{})
 	if err != nil {
@@ -52,5 +83,6 @@ func (repo *libraryRepository) CreateIndices(ctx context.Context) {
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Println("Name of Index Created: " + name)
 }

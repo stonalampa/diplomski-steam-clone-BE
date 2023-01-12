@@ -12,6 +12,10 @@ import (
 
 type ReviewsRepository interface {
 	CreateReview(ctx context.Context, review *Review) (*mongo.InsertOneResult, error)
+	GetReview(ctx context.Context, id primitive.ObjectID) (*mongo.InsertOneResult, error)
+	GetAllReviewsForGame(ctx context.Context, gameId primitive.ObjectID) ([]Review, error)
+	GetAllReviewsFromUser(ctx context.Context, userId primitive.ObjectID) ([]Review, error)
+	DeleteReview(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropReviews(ctx context.Context)
 	CreateIndices(ctx context.Context)
 }
@@ -34,6 +38,47 @@ type Review struct {
 func (repo *reviewsRepository) CreateReview(ctx context.Context, review *Review) (*mongo.InsertOneResult, error) {
 	result, err := repo.db.Collection("reviews").InsertOne(ctx, review)
 	return result, err
+}
+
+func (repo *reviewsRepository) GetReview(ctx context.Context, id primitive.ObjectID) (*mongo.InsertOneResult, error) {
+	result, err := repo.db.Collection("reviews").InsertOne(ctx, id)
+	return result, err
+}
+
+func (repo *reviewsRepository) GetAllReviewsForGame(ctx context.Context, gameId primitive.ObjectID) ([]Review, error) {
+	filter := bson.M{"gameId": gameId}
+	cursor, err := repo.db.Collection("reviews").Find(ctx, filter)
+	if err != nil {
+		return []Review{}, err
+	}
+
+	var results []Review
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		return []Review{}, err
+	}
+	return results, nil
+}
+
+func (repo *reviewsRepository) GetAllReviewsFromUser(ctx context.Context, userId primitive.ObjectID) ([]Review, error) {
+	filter := bson.M{"userId": userId}
+	cursor, err := repo.db.Collection("reviews").Find(ctx, filter)
+	if err != nil {
+		return []Review{}, err
+	}
+
+	var results []Review
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		return []Review{}, err
+	}
+	return results, nil
+}
+
+func (repo *reviewsRepository) DeleteReview(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	res, err := repo.db.Collection("reviews").DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		return &mongo.DeleteResult{}, err
+	}
+	return res, nil
 }
 
 func (repo *reviewsRepository) DropReviews(ctx context.Context) {

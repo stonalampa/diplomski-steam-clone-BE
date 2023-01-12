@@ -90,11 +90,14 @@ func main() {
 	}
 	db := client.Database(viper.GetString("name"))
 
-	if viper.GetBool("seed") == true {
+	if viper.GetBool("seed") {
 		seeds.Seeder(db)
 	} else {
-		repo := repository.NewUsersRepository(db)
-		userService := service.NewUsersService(repo)
+		userRepo := repository.NewUsersRepository(db)
+		userService := service.NewUsersService(userRepo)
+
+		gamesRepo := repository.NewGamesRepository(db)
+		gamesService := service.NewGamesService(gamesRepo)
 
 		//* Create gin router and set trusted proxy
 		router := gin.Default()
@@ -110,7 +113,6 @@ func main() {
 			Credentials:     true,
 			ValidateHeaders: true,
 		}))
-
 		//* Defined public and private (uses JWT auth) router groups and endpoints
 		publicGroup := router.Group("/api")
 		privateGroup := router.Group("/api")
@@ -118,6 +120,8 @@ func main() {
 		{
 			publicGroup.GET("/users", userService.GetUser)
 			privateGroup.POST("/users", userService.CreateUser)
+
+			publicGroup.GET("/games", gamesService.GetGame)
 		}
 
 		router.Run(":3030")

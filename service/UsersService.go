@@ -10,15 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Service struct {
+type UserService struct {
 	usersRepository repository.UsersRepository
 }
 
-func NewUsersService(usersRepository repository.UsersRepository) *Service {
-	return &Service{usersRepository: usersRepository}
+func NewUsersService(usersRepository repository.UsersRepository) *UserService {
+	return &UserService{usersRepository: usersRepository}
 }
 
-func (s Service) CreateUser(ctx *gin.Context) {
+func (us UserService) CreateUser(ctx *gin.Context) {
 	validated := validateCreateUser(ctx)
 	if !validated {
 		return
@@ -38,7 +38,7 @@ func (s Service) CreateUser(ctx *gin.Context) {
 	user.UpdatedAt = time.Now()
 	user.Password = hashedPass
 
-	insertedUser, err := s.usersRepository.CreateUser(ctx, &user)
+	insertedUser, err := us.usersRepository.CreateUser(ctx, &user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -47,6 +47,6 @@ func (s Service) CreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"user": insertedUser})
 }
 
-func (s Service) GetUser(ctx *gin.Context) {
+func (us UserService) GetUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"hello": "world"})
 }

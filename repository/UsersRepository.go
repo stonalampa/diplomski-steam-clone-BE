@@ -13,6 +13,10 @@ import (
 
 type UsersRepository interface {
 	CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error)
+	GetUser(ctx context.Context, id primitive.ObjectID) (User, error)
+	GetAllUsers(ctx context.Context) ([]User, error)
+	UpdateUser(ctx context.Context, data User) (*mongo.UpdateResult, error)
+	DeleteUser(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropUsers(ctx context.Context)
 	CreateIndices(ctx context.Context)
 }
@@ -33,6 +37,7 @@ type User struct {
 	Name         string             `json:"name" bson:"name"`
 	DateOfBirth  string             `json:"dateOfBirth" bson:"dateOfBirth"`
 	IsAdmin      bool               `json:"isAdmin" bson:"isAdmin"`
+	IsActive     bool               `json:"isActive" bson:"isActive"`
 	PaymentCards []PaymentCard      `json:"paymentCards" bson:"paymentCards"`
 	CreatedAt    time.Time          `bson:"created_at"`
 	UpdatedAt    time.Time          `bson:"updated_at"`
@@ -49,21 +54,45 @@ func (repo *usersRepository) CreateUser(ctx context.Context, user *User) (*mongo
 	return result, err
 }
 
-// func (repo *userRepository) FindUsers(ctx context.Context) ([]User, error) {
+func (repo *usersRepository) GetUser(ctx context.Context, id primitive.ObjectID) (User, error) {
+	var user User
+	err := repo.db.Collection("users").FindOne(ctx, bson.D{primitive.E{Key: "_id", Value: id}}).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
 
-// }
+	return user, nil
+}
 
-// func (repo *userRepository) GetUser(ctx context.Context, email string) (User, error) {
+func (repo *usersRepository) GetAllUsers(ctx context.Context) ([]User, error) {
+	cursor, err := repo.db.Collection("users").Find(ctx, bson.D{})
+	if err != nil {
+		return []User{}, err
+	}
 
-// }
+	var results []User
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		return []User{}, err
+	}
+	return results, nil
+}
 
-// func (repo *userRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateOneModel, error) {
+func (repo *usersRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateResult, error) {
+	res, err := repo.db.Collection("users").UpdateByID(ctx, data.ID, data)
+	if err != nil {
+		return &mongo.UpdateResult{}, err
+	}
 
-// }
+	return res, nil
+}
 
-// func (repo *userRepository) DeleteUser(ctx context.Context, email) (*mongo.DeleteResult, error) {
-
-// }
+func (repo *usersRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	res, err := repo.db.Collection("users").DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		return &mongo.DeleteResult{}, err
+	}
+	return res, nil
+}
 
 func (repo *usersRepository) DropUsers(ctx context.Context) {
 	_, err := repo.db.Collection("users").DeleteMany(ctx, bson.D{})
