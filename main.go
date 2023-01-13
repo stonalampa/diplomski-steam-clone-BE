@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	cors "github.com/itsjamie/gin-cors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -104,15 +104,15 @@ func main() {
 		router.SetTrustedProxies([]string{"192.168.0.1"})
 
 		//* Add CORS config to router
-		router.Use(cors.Middleware(cors.Config{
-			Origins:         "http://files.server.com",
-			Methods:         "GET, PUT, DELETE, POST, OPTIONS",
-			RequestHeaders:  "Origin, Authorization, Content-Type",
-			ExposedHeaders:  "",
-			MaxAge:          50 * time.Second,
-			Credentials:     true,
-			ValidateHeaders: true,
+		router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"https://localhost:3000", "http://localhost:3000"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+			AllowHeaders:     []string{"Content-Length", "Content-Type", "authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
 		}))
+
 		//* Defined public and private (uses JWT auth) router groups and endpoints
 		publicGroup := router.Group("/api")
 		privateGroup := router.Group("/api")
