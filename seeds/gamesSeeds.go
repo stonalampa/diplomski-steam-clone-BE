@@ -2,12 +2,13 @@ package seeds
 
 import (
 	repo "main/repository"
+	"main/utils"
 	"time"
 )
 
 var games = []repo.Game{
 	{
-		ID:              generateId("63bed80f04bedac5324c421a"),
+		ID:              utils.GenerateId("63bed80f04bedac5324c421a"),
 		Title:           "Halo: The Master Chief Collection",
 		Price:           39.99,
 		Developer:       "Bungie",
@@ -21,7 +22,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2019, 12, 3, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed8174d991d50de422d6b"),
+		ID:              utils.GenerateId("63bed8174d991d50de422d6b"),
 		Title:           "DOOM",
 		Price:           19.99,
 		Developer:       "id Software",
@@ -35,7 +36,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(216, 5, 13, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed81ec1bd88d167f66a8f"),
+		ID:              utils.GenerateId("63bed81ec1bd88d167f66a8f"),
 		Title:           "DOOM Eternal",
 		Price:           39.99,
 		Developer:       "id Software",
@@ -49,7 +50,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2020, 3, 20, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed8230a995357e03daa9f"),
+		ID:              utils.GenerateId("63bed8230a995357e03daa9f"),
 		Title:           "The Witcher® 3: Wild Hunt",
 		Price:           29.99,
 		Developer:       "CD PROJEKT RED",
@@ -63,7 +64,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2015, 5, 18, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed828e88e68df55def4e4"),
+		ID:              utils.GenerateId("63bed828e88e68df55def4e4"),
 		Title:           "God of War",
 		Price:           49.99,
 		Developer:       "Santa Monica Studio",
@@ -77,7 +78,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2022, 1, 14, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed83259e1a173be264188"),
+		ID:              utils.GenerateId("63bed83259e1a173be264188"),
 		Title:           "Cyberpunk 2077",
 		Price:           59.99,
 		Developer:       "CD PROJEKT RED",
@@ -91,7 +92,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2019, 12, 3, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed8377f1a60b806b81cb8"),
+		ID:              utils.GenerateId("63bed8377f1a60b806b81cb8"),
 		Title:           "ELDEN RING",
 		Price:           59.99,
 		Developer:       "FromSoftware Inc.",
@@ -105,7 +106,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2022, 2, 25, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed83dc0378d4abb338e72"),
+		ID:              utils.GenerateId("63bed83dc0378d4abb338e72"),
 		Title:           "Sekiro™: Shadows Die Twice - GOTY Edition",
 		Price:           59.99,
 		Developer:       "FromSoftware",
@@ -119,7 +120,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2019, 3, 21, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed843597757fc6bb4953e"),
+		ID:              utils.GenerateId("63bed843597757fc6bb4953e"),
 		Title:           "Horizon Zero Dawn™ Complete Edition",
 		Price:           49.99,
 		Developer:       "Guerilla",
@@ -133,7 +134,7 @@ var games = []repo.Game{
 		ReleaseDate:     time.Date(2022, 8, 7, 0, 0, 0, 0, time.Local),
 	},
 	{
-		ID:              generateId("63bed848240a8702cbdf09d4"),
+		ID:              utils.GenerateId("63bed848240a8702cbdf09d4"),
 		Title:           "Dead Space",
 		Price:           59.99,
 		Developer:       "Motive",

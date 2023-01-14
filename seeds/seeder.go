@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 	repo "main/repository"
-	"main/utils"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -60,14 +58,4 @@ func Seeder(db *mongo.Database) {
 
 func printMessage(key string) {
 	fmt.Printf("Inserting values for type: %s\n", key)
-}
-
-func generateId(hex string) primitive.ObjectID {
-	id, _ := primitive.ObjectIDFromHex(hex)
-	return id
-}
-
-func generatePassword(pass string) string {
-	hashedPass, _ := utils.HashPassword(pass)
-	return hashedPass
 }

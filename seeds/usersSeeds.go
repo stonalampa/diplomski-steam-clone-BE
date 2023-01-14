@@ -2,15 +2,16 @@ package seeds
 
 import (
 	repo "main/repository"
+	"main/utils"
 	"time"
 )
 
 var users = []repo.User{
 	{
-		ID:           generateId("63bd69c3b2058767688d3d94"),
+		ID:           utils.GenerateId("63bd69c3b2058767688d3d94"),
 		Email:        "admin@test.com",
 		Username:     "admin",
-		Password:     generatePassword("test123"),
+		Password:     utils.GeneratePassword("test123"),
 		Name:         "Stole Stojanovic",
 		DateOfBirth:  "1900-01-01",
 		IsAdmin:      true,
@@ -20,10 +21,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6bd756fa7318db852016"),
+		ID:           utils.GenerateId("63bd6bd756fa7318db852016"),
 		Email:        "jjeannet0@sakura.ne.jp",
 		Username:     "jjeannet0",
-		Password:     generatePassword("LciZEK3wB"),
+		Password:     utils.GeneratePassword("LciZEK3wB"),
 		Name:         "Joelynn Jeannet",
 		DateOfBirth:  "1987-04-15",
 		IsAdmin:      false,
@@ -33,10 +34,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d56d8eccac11b965956"),
+		ID:           utils.GenerateId("63bd6d56d8eccac11b965956"),
 		Email:        "kvell1@microsoft.com",
 		Username:     "kvell1",
-		Password:     generatePassword("3XS0qDBbh20s"),
+		Password:     utils.GeneratePassword("3XS0qDBbh20s"),
 		Name:         "Kellina Vell",
 		DateOfBirth:  "1993-01-18",
 		IsAdmin:      false,
@@ -46,10 +47,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6ce339dd5484c8d7b7a9"),
+		ID:           utils.GenerateId("63bd6ce339dd5484c8d7b7a9"),
 		Email:        "ascarlett2@yelp.com",
 		Username:     "ascarlett2",
-		Password:     generatePassword("LciZEK3wB"),
+		Password:     utils.GeneratePassword("LciZEK3wB"),
 		Name:         "Ardra Scarlett",
 		DateOfBirth:  "1976-11-10",
 		IsAdmin:      false,
@@ -59,10 +60,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d1bd0564a6e1c2de5b4"),
+		ID:           utils.GenerateId("63bd6d1bd0564a6e1c2de5b4"),
 		Email:        "mheavy3@icio.us",
 		Username:     "mheavy3",
-		Password:     generatePassword("XrgYX3"),
+		Password:     utils.GeneratePassword("XrgYX3"),
 		Name:         "Marabel Heavy",
 		DateOfBirth:  "1997-10-07",
 		IsAdmin:      false,
@@ -72,10 +73,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d1fab372bf383a2dbc7"),
+		ID:           utils.GenerateId("63bd6d1fab372bf383a2dbc7"),
 		Email:        "btregidgo4@latimes.com",
 		Username:     "btregidgo4",
-		Password:     generatePassword("X3y8AdkhX35A"),
+		Password:     utils.GeneratePassword("X3y8AdkhX35A"),
 		Name:         "Beck Tregidgo",
 		DateOfBirth:  "1992-03-12",
 		IsAdmin:      false,
@@ -84,10 +85,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d235a1cbb4302d1f09a"),
+		ID:           utils.GenerateId("63bd6d235a1cbb4302d1f09a"),
 		Email:        "gdunkerley5@wikipedia.org",
 		Username:     "gdunkerley5",
-		Password:     generatePassword("OwW99N3"),
+		Password:     utils.GeneratePassword("OwW99N3"),
 		Name:         "Giffie Dunkerley",
 		DateOfBirth:  "1970-09-29",
 		IsAdmin:      false,
@@ -96,10 +97,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d29bfdab9586c5bf162"),
+		ID:           utils.GenerateId("63bd6d29bfdab9586c5bf162"),
 		Email:        "lwoofendell6@multiply.com",
 		Username:     "lwoofendell6",
-		Password:     generatePassword("iKpKquj"),
+		Password:     utils.GeneratePassword("iKpKquj"),
 		Name:         "Luelle Woofendell",
 		DateOfBirth:  "1999-12-06",
 		IsAdmin:      false,
@@ -108,10 +109,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d40fb221e7af31f30dd"),
+		ID:           utils.GenerateId("63bd6d40fb221e7af31f30dd"),
 		Email:        "gcodlin7@eventbrite.com",
 		Username:     "gcodlin7",
-		Password:     generatePassword("DtJLZQ"),
+		Password:     utils.GeneratePassword("DtJLZQ"),
 		Name:         "Georgeanna Codlin",
 		DateOfBirth:  "1993-11-12",
 		IsAdmin:      false,
@@ -121,10 +122,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6ce339dd5484c8d7b7a9"),
+		ID:           utils.GenerateId("63bd6ce339dd5484c8d7b7a9"),
 		Email:        "sstrasse8@studiopress.com",
 		Username:     "sstrasse8",
-		Password:     generatePassword("jvmGdAh8B3G"),
+		Password:     utils.GeneratePassword("jvmGdAh8B3G"),
 		Name:         "Shani Strasse",
 		DateOfBirth:  "1992-02-29",
 		IsAdmin:      false,
@@ -134,10 +135,10 @@ var users = []repo.User{
 		UpdatedAt:    time.Now(),
 	},
 	{
-		ID:           generateId("63bd6d3408644f39445e6ee0"),
+		ID:           utils.GenerateId("63bd6d3408644f39445e6ee0"),
 		Email:        "kvan9@cornell.edu",
 		Username:     "kvan9",
-		Password:     generatePassword("FHkpNdlo"),
+		Password:     utils.GeneratePassword("FHkpNdlo"),
 		Name:         "Kalila Van Velden",
 		DateOfBirth:  "1979-01-24",
 		IsAdmin:      false,
