@@ -27,10 +27,13 @@ var (
 		Use:       "EnvSeed",
 		Short:     "Checks env and seed flags",
 		Long:      "Checks if the env is local or deployed. Check if the seeds or the server should be run.",
-		ValidArgs: []string{"true", "false", "local", "deployment"},
-		Args:      matchAll(cobra.MinimumNArgs(2), cobra.OnlyValidArgs),
+		ValidArgs: []string{"true", "false", "local", "deployment", ""},
+		Args:      matchAll(cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
-			if args[0] == "true" || args[0] == "false" {
+			if len(args) == 0 {
+				env = "deployment"
+				seed = "false"
+			} else if args[0] == "true" || args[0] == "false" {
 				env = args[1]
 				seed = args[0]
 			} else {
