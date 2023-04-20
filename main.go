@@ -108,7 +108,7 @@ func main() {
 
 		//* Add CORS config to router
 		router.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"https://localhost:3000", "http://localhost:3000"},
+			AllowOrigins:     []string{"https://localhost:8080", "http://localhost:8080"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 			AllowHeaders:     []string{"Content-Length", "Content-Type", "authorization"},
 			ExposeHeaders:    []string{"Content-Length"},
@@ -121,10 +121,24 @@ func main() {
 		privateGroup := router.Group("/api")
 		privateGroup.Use(utils.ValidateJwt)
 		{
-			publicGroup.GET("/users", userService.GetUser)
+			//* Users
+			privateGroup.GET("/users/:id", userService.GetUser)
+			privateGroup.GET("/users", userService.GetUsers)
 			privateGroup.POST("/users", userService.CreateUser)
+			privateGroup.PUT("/users", userService.UpdateUser)
+			privateGroup.DELETE("/users", userService.DeleteUser)
 
+			//* Games
 			publicGroup.GET("/games", gamesService.GetGame)
+			publicGroup.GET("/games/:id", gamesService.GetGame)
+
+			privateGroup.POST("/games", gamesService.CreateGame)
+			privateGroup.PUT("/games", gamesService.UpdateGame)
+			privateGroup.DELETE("/games", gamesService.DeleteGame)
+
+			//* Library
+
+			//* Reviews
 		}
 
 		router.Run(":3030")
