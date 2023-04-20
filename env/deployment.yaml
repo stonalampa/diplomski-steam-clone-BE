@@ -1,5 +1,5 @@
 #database config
-  connectionString: mongodb+srv://db_user:2ogDOpti8r2jAePZ@steam-clone-db.hbsaqon.mongodb.net/?retryWrites=true&w=majority
+  connectionString:
   name: steam-clone-db
   username: db_user
   password: 2ogDOpti8r2jAePZ
