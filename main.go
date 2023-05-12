@@ -102,6 +102,8 @@ func main() {
 		gamesRepo := repository.NewGamesRepository(db)
 		gamesService := service.NewGamesService(gamesRepo)
 
+		authService := service.NewAuthService(userRepo)
+
 		//* Create gin router and set trusted proxy
 		router := gin.Default()
 		router.SetTrustedProxies([]string{"192.168.0.1"})
@@ -121,6 +123,10 @@ func main() {
 		privateGroup := router.Group("/api")
 		privateGroup.Use(utils.ValidateJwt)
 		{
+			//* Login
+			publicGroup.POST("/adminLogin", authService.AdminLogin)
+			publicGroup.POST("/login", authService.Login)
+
 			//* Users
 			privateGroup.GET("/users/:id", userService.GetUser)
 			privateGroup.GET("/users", userService.GetUsers)
@@ -129,7 +135,7 @@ func main() {
 			privateGroup.DELETE("/users", userService.DeleteUser)
 
 			//* Games
-			publicGroup.GET("/games", gamesService.GetGame)
+			publicGroup.GET("/games", gamesService.GetAllGames)
 			publicGroup.GET("/games/:id", gamesService.GetGame)
 
 			privateGroup.POST("/games", gamesService.CreateGame)

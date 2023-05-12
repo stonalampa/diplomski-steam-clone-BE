@@ -14,6 +14,7 @@ import (
 type UsersRepository interface {
 	CreateUser(ctx context.Context, user *User) (*mongo.InsertOneResult, error)
 	GetUser(ctx context.Context, id primitive.ObjectID) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	UpdateUser(ctx context.Context, data User) (*mongo.UpdateResult, error)
 	DeleteUser(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
@@ -57,6 +58,16 @@ func (repo *usersRepository) CreateUser(ctx context.Context, user *User) (*mongo
 func (repo *usersRepository) GetUser(ctx context.Context, id primitive.ObjectID) (User, error) {
 	var user User
 	err := repo.db.Collection("users").FindOne(ctx, bson.D{primitive.E{Key: "_id", Value: id}}).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (repo *usersRepository) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	var user User
+	err := repo.db.Collection("users").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}}).Decode(&user)
 	if err != nil {
 		return User{}, err
 	}
