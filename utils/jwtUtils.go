@@ -80,7 +80,7 @@ func parseToken(jwtToken string) (*jwt.Token, error) {
 }
 
 func GenerateToken(email string, loggedIn bool, isAdmin bool) (string, error) {
-	//* If development env generate a token that won't expire otherwise it is valid for 2 days
+	// * If development env generate a token that won't expire otherwise it is valid for 2 days
 	env := viper.GetString("env")
 	var expiresAt int64
 	if env == "local" {

@@ -15,6 +15,7 @@ type ReviewsRepository interface {
 	GetReview(ctx context.Context, id primitive.ObjectID) (*mongo.InsertOneResult, error)
 	GetAllReviewsForGame(ctx context.Context, gameId primitive.ObjectID) ([]Review, error)
 	GetAllReviewsFromUser(ctx context.Context, userId primitive.ObjectID) ([]Review, error)
+	UpdateReview(ctx context.Context, update *Review) (*mongo.UpdateResult, error)
 	DeleteReview(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropReviews(ctx context.Context)
 	CreateIndices(ctx context.Context)
@@ -71,6 +72,18 @@ func (repo *reviewsRepository) GetAllReviewsFromUser(ctx context.Context, userId
 		return []Review{}, err
 	}
 	return results, nil
+}
+
+func (repo *reviewsRepository) UpdateReview(ctx context.Context, update *Review) (*mongo.UpdateResult, error) {
+	filter := bson.M{"_id": update.ID}
+	updateDoc := bson.M{"$set": update}
+
+	result, err := repo.db.Collection("reviews").UpdateOne(ctx, filter, updateDoc)
+	if err != nil {
+		return &mongo.UpdateResult{}, err
+	}
+
+	return result, nil
 }
 
 func (repo *reviewsRepository) DeleteReview(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {

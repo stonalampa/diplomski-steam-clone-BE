@@ -61,7 +61,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	//* Set configuration
+	// * Set configuration
 	configLocation := "./env/" + env + ".yaml"
 	viper.SetConfigFile(configLocation)
 	viper.Set("env", env)
@@ -75,7 +75,7 @@ func main() {
 		panic(fmt.Errorf("fatal error config file: %w", configError))
 	}
 
-	//* Connect to db
+	// * Connect to db
 	var dbCredentials = options.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
 		AuthSource:    viper.GetString("name"),
@@ -97,18 +97,23 @@ func main() {
 		seeds.Seeder(db)
 	} else {
 		userRepo := repository.NewUsersRepository(db)
+		authService := service.NewAuthService(userRepo)
 		userService := service.NewUsersService(userRepo)
 
 		gamesRepo := repository.NewGamesRepository(db)
 		gamesService := service.NewGamesService(gamesRepo)
 
-		authService := service.NewAuthService(userRepo)
+		libraryRepo := repository.NewLibraryRepository(db)
+		libraryService := service.NewLibraryService(libraryRepo)
 
-		//* Create gin router and set trusted proxy
+		reviewRepo := repository.NewReviewsRepository(db)
+		reviewService := service.NewReviewsService(reviewRepo)
+
+		// * Create gin router and set trusted proxy
 		router := gin.Default()
 		router.SetTrustedProxies([]string{"192.168.0.1"})
 
-		//* Add CORS config to router
+		// * Add CORS config to router
 		router.Use(cors.New(cors.Config{
 			AllowOrigins:     []string{"https://localhost:8080", "http://localhost:8080"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
@@ -118,23 +123,23 @@ func main() {
 			MaxAge:           12 * time.Hour,
 		}))
 
-		//* Defined public and private (uses JWT auth) router groups and endpoints
+		// * Defined public and private (uses JWT auth) router groups and endpoints
 		publicGroup := router.Group("/api")
 		privateGroup := router.Group("/api")
 		privateGroup.Use(utils.ValidateJwt)
 		{
-			//* Login
+			// * Login
 			publicGroup.POST("/adminLogin", authService.AdminLogin)
 			publicGroup.POST("/login", authService.Login)
 
-			//* Users
+			// * Users
 			privateGroup.GET("/users/:id", userService.GetUser)
 			privateGroup.GET("/users", userService.GetUsers)
 			privateGroup.POST("/users", userService.CreateUser)
 			privateGroup.PUT("/users", userService.UpdateUser)
 			privateGroup.DELETE("/users", userService.DeleteUser)
 
-			//* Games
+			// * Games
 			publicGroup.GET("/games", gamesService.GetAllGames)
 			publicGroup.GET("/games/:id", gamesService.GetGame)
 
@@ -142,9 +147,17 @@ func main() {
 			privateGroup.PUT("/games", gamesService.UpdateGame)
 			privateGroup.DELETE("/games", gamesService.DeleteGame)
 
-			//* Library
+			// * Library
+			privateGroup.GET("/library/:id", libraryService.GetLibraryRecord)
+			privateGroup.POST("/library", libraryService.CreateLibraryRecord)
+			privateGroup.PUT("/library", libraryService.UpdateLibraryRecord)
+			privateGroup.DELETE("/library", libraryService.DeleteLibraryRecord)
 
-			//* Reviews
+			// * Reviews
+			privateGroup.GET("/reviews/:id", reviewService.GetReviewRecord)
+			privateGroup.POST("/reviews", reviewService.CreateReviewRecord)
+			privateGroup.PUT("/reviews", reviewService.UpdateReviewRecord)
+			privateGroup.DELETE("/reviews", reviewService.DeleteReviewRecord)
 		}
 
 		router.Run(":3030")
