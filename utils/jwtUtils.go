@@ -16,7 +16,8 @@ type UnsignedResponse struct {
 }
 type authCustomClaims struct {
 	Email    string `json:"email"`
-	LoggedIn bool   `json:"LoggedIn"`
+	LoggedIn bool   `json:"loggedIn"`
+	IsAdmin  bool   `json:"isAdmin"`
 	jwt.StandardClaims
 }
 
@@ -78,7 +79,7 @@ func parseToken(jwtToken string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func GenerateToken(email string, loggedIn bool) (string, error) {
+func GenerateToken(email string, loggedIn bool, isAdmin bool) (string, error) {
 	//* If development env generate a token that won't expire otherwise it is valid for 2 days
 	env := viper.GetString("env")
 	var expiresAt int64
@@ -91,6 +92,7 @@ func GenerateToken(email string, loggedIn bool) (string, error) {
 	claims := &authCustomClaims{
 		email,
 		loggedIn,
+		isAdmin,
 		jwt.StandardClaims{
 			ExpiresAt: expiresAt,
 			Issuer:    issuer,

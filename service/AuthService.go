@@ -44,7 +44,7 @@ func (as AuthService) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.Email, true)
+	token, err := utils.GenerateToken(user.Email, true, user.IsAdmin)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -71,12 +71,12 @@ func (as AuthService) AdminLogin(ctx *gin.Context) {
 		return
 	}
 
-	if !user.IsAdmin || !utils.CheckPasswordHash(user.Password, input.Password) {
+	if !user.IsAdmin || !utils.CheckPasswordHash(input.Password, user.Password) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
-	token, err := utils.GenerateToken(input.Email, true)
+	token, err := utils.GenerateToken(input.Email, true, user.IsAdmin)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
