@@ -3,7 +3,6 @@ package service
 import (
 	"main/repository"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -65,18 +64,7 @@ func (gs GamesService) FindGames(ctx *gin.Context) {
 }
 
 func (gs GamesService) GetAllGames(ctx *gin.Context) {
-	recordsParam := ctx.Query("records")
-	records, err := strconv.ParseInt(recordsParam, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid records parameter"})
-		return
-	}
-
-	if records == 0 {
-		records = 10 // * If records is not provided, return 10 records
-	}
-
-	games, err := gs.gamesRepository.GetGames(ctx, records)
+	games, err := gs.gamesRepository.GetAllGames(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
