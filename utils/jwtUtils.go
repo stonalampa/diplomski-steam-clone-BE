@@ -21,6 +21,11 @@ type authCustomClaims struct {
 	jwt.StandardClaims
 }
 
+type authConfirmationClaims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
+}
+
 var secret = "ReallySecureSecret"
 var issuer = "SolidStojan"
 
@@ -106,4 +111,45 @@ func GenerateToken(email string, loggedIn bool, isAdmin bool) (string, error) {
 		panic(err)
 	}
 	return signedToken, nil
+}
+
+func GenerateConfirmationToken(email string) (string, error) {
+	claims := &authConfirmationClaims{
+		email,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+			Issuer:    issuer,
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signedToken, err := token.SignedString([]byte(secret))
+	if err != nil {
+		panic(err)
+	}
+	return signedToken, nil
+}
+
+func ValidateConfirmationJwt(c *gin.Context) (string, error) {
+	tokenString := c.Query("token")
+	if tokenString == "" {
+		return "", errors.New("invalid token")
+	}
+	token, err := parseToken(tokenString)
+	if err != nil || !token.Valid {
+		return "", errors.New("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("invalid claims")
+	}
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return "", errors.New("invalid email claim")
+	}
+
+	return email, nil
 }

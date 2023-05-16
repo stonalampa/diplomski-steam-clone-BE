@@ -89,7 +89,11 @@ func (repo *usersRepository) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 func (repo *usersRepository) UpdateUser(ctx context.Context, data User) (*mongo.UpdateResult, error) {
-	res, err := repo.db.Collection("users").UpdateByID(ctx, data.ID, data)
+	update := bson.M{
+		"$set": data,
+	}
+
+	res, err := repo.db.Collection("users").UpdateByID(ctx, data.ID, update)
 	if err != nil {
 		return &mongo.UpdateResult{}, err
 	}

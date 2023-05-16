@@ -135,9 +135,17 @@ func main() {
 			// * Users
 			privateGroup.GET("/users/:id", userService.GetUser)
 			privateGroup.GET("/users", userService.GetUsers)
-			privateGroup.POST("/users", userService.CreateUser)
 			privateGroup.PUT("/users", userService.UpdateUser)
 			privateGroup.DELETE("/users", userService.DeleteUser)
+			publicGroup.GET("/users/confirm", userService.ConfirmUser)
+			publicGroup.POST("/users", func(c *gin.Context) {
+				resetPassword := c.Query("resetPassword")
+				if resetPassword == "true" {
+					userService.ResetEmail(c)
+				} else {
+					userService.CreateUser(c)
+				}
+			})
 
 			// * Games
 			publicGroup.GET("/games", gamesService.GetAllGames)

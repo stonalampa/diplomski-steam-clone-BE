@@ -1,6 +1,7 @@
 package service
 
 import (
+	"main/helpers"
 	"main/repository"
 	"main/utils"
 	"net/http"
@@ -51,10 +52,10 @@ func (us UserService) GetUsers(ctx *gin.Context) {
 }
 
 func (us UserService) CreateUser(ctx *gin.Context) {
-	validated := validateCreateUser(ctx)
-	if !validated {
-		return
-	}
+	// validated := validateCreateUser(ctx)
+	// if !validated {
+	// 	return
+	// }
 
 	var user repository.User
 	ctx.BindJSON(&user)
@@ -69,10 +70,18 @@ func (us UserService) CreateUser(ctx *gin.Context) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 	user.Password = hashedPass
+	user.IsAdmin = false
+	user.IsActive = false
 
 	insertedUser, err := us.usersRepository.CreateUser(ctx, &user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	result := helpers.ConfirmationEmail("test@test.com", "emailTemplates/ConfirmAccountEmail.html")
+	if !result {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Email not sent"})
 		return
 	}
 
@@ -137,4 +146,67 @@ func (us UserService) DeleteUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
+func (us UserService) ResetEmail(ctx *gin.Context) {
+	var reqBody struct {
+		Email string
+	}
+
+	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := us.usersRepository.GetUserByEmail(ctx, reqBody.Email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User does not exist"})
+		return
+	}
+
+	newPassword := utils.GenerateRandomPassword()
+	user.Password = utils.GeneratePassword(newPassword)
+
+	_, err = us.usersRepository.UpdateUser(ctx, user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User update failed"})
+		return
+	}
+
+	result := helpers.GenerateNewPasswordEmail(user.Email, newPassword, "emailTemplates/PasswordResetEmail.html")
+	if !result {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User email sending failed"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User password was reset successfully"})
+}
+
+func (us UserService) ConfirmUser(ctx *gin.Context) {
+	email, err := utils.ValidateConfirmationJwt(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid confirmation token"})
+		return
+	}
+
+	user, err := us.usersRepository.GetUserByEmail(ctx, email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User does not exist"})
+		return
+	}
+
+	user.IsActive = true
+	_, err = us.usersRepository.UpdateUser(ctx, user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User update failed"})
+		return
+	}
+
+	result := helpers.ConfirmationEmail(email, "emailTemplates/ConfirmAccountEmail.html")
+	if !result {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User update failed"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Account successfully activated"})
 }

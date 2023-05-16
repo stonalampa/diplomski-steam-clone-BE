@@ -39,7 +39,12 @@ func (as AuthService) Login(ctx *gin.Context) {
 		return
 	}
 
-	if !utils.CheckPasswordHash(user.Password, input.Password) {
+	if !user.IsActive {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User is not active"})
+		return
+	}
+
+	if !utils.CheckPasswordHash(input.Password, user.Password) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
