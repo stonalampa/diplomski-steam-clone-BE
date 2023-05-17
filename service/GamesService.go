@@ -3,6 +3,7 @@ package service
 import (
 	"main/repository"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -54,23 +55,31 @@ func (gs GamesService) GetGame(ctx *gin.Context) {
 }
 
 func (gs GamesService) FindGames(ctx *gin.Context) {
-	games, err := gs.gamesRepository.GetAllGames(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	limit := ctx.Query("limit")
+	var games []repository.Game
+	if limit == "" {
+		var err error
+		games, err := gs.gamesRepository.GetAllGames(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"games": games})
+	} else {
+		var err error
+		numberOfGames, err := strconv.ParseInt(limit, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
+			return
+		}
+
+		games, err = gs.gamesRepository.GetGames(ctx, numberOfGames)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"games": games})
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{"games": games})
-}
-
-func (gs GamesService) GetAllGames(ctx *gin.Context) {
-	games, err := gs.gamesRepository.GetAllGames(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"games": games})
 }
 
 func (gs GamesService) UpdateGame(ctx *gin.Context) {

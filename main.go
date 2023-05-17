@@ -148,7 +148,7 @@ func main() {
 			})
 
 			// * Games
-			publicGroup.GET("/games", gamesService.GetAllGames)
+			publicGroup.GET("/games", gamesService.FindGames)
 			publicGroup.GET("/games/:id", gamesService.GetGame)
 
 			privateGroup.POST("/games", gamesService.CreateGame)
