@@ -16,7 +16,7 @@ type GamesRepository interface {
 	GetGame(ctx context.Context, id primitive.ObjectID) (Game, error)
 	GetGames(ctx context.Context, numberOfRecords int64) ([]Game, error)
 	GetAllGames(ctx context.Context) ([]Game, error)
-	UpdateGame(ctx context.Context, game *Game) (*mongo.UpdateResult, error)
+	UpdateGame(ctx context.Context, game Game) (*mongo.UpdateResult, error)
 	DeleteGame(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropGames(ctx context.Context)
 	CreateIndices(ctx context.Context)
@@ -87,8 +87,11 @@ func (repo *gamesRepository) GetAllGames(ctx context.Context) ([]Game, error) {
 	return results, nil
 }
 
-func (repo *gamesRepository) UpdateGame(ctx context.Context, game *Game) (*mongo.UpdateResult, error) {
-	res, err := repo.db.Collection("games").UpdateByID(ctx, game.ID, game)
+func (repo *gamesRepository) UpdateGame(ctx context.Context, game Game) (*mongo.UpdateResult, error) {
+	update := bson.M{
+		"$set": game,
+	}
+	res, err := repo.db.Collection("games").UpdateByID(ctx, game.ID, update)
 	if err != nil {
 		return &mongo.UpdateResult{}, err
 	}

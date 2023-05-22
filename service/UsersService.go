@@ -52,11 +52,6 @@ func (us UserService) GetUsers(ctx *gin.Context) {
 }
 
 func (us UserService) CreateUser(ctx *gin.Context) {
-	// validated := validateCreateUser(ctx)
-	// if !validated {
-	// 	return
-	// }
-
 	var user repository.User
 	ctx.BindJSON(&user)
 

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"main/repository"
 	"net/http"
 	"strconv"
@@ -19,16 +20,19 @@ func NewGamesService(gamesRepository repository.GamesRepository) *GamesService {
 
 func (gs GamesService) CreateGame(ctx *gin.Context) {
 	var game repository.Game
-	ctx.BindJSON(&game)
-
-	game.ID = primitive.NewObjectID()
-
-	insertedGame, err := gs.gamesRepository.CreateGame(ctx, &game)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(&game); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
 		return
 	}
 
+	game.ID = primitive.NewObjectID()
+	insertedGame, err := gs.gamesRepository.CreateGame(ctx, &game)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	fmt.Printf("%v", game)
+	fmt.Printf("%v", insertedGame)
 	ctx.JSON(http.StatusOK, gin.H{"game": insertedGame})
 }
 
@@ -59,7 +63,7 @@ func (gs GamesService) FindGames(ctx *gin.Context) {
 	var games []repository.Game
 	if limit == "" {
 		var err error
-		games, err := gs.gamesRepository.GetAllGames(ctx)
+		games, err = gs.gamesRepository.GetAllGames(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -83,10 +87,26 @@ func (gs GamesService) FindGames(ctx *gin.Context) {
 }
 
 func (gs GamesService) UpdateGame(ctx *gin.Context) {
-	var game repository.Game
-	ctx.BindJSON(&game)
+	var err error
+	gameID := ctx.Param("id")
+	if gameID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
+		return
+	}
 
-	result, err := gs.gamesRepository.UpdateGame(ctx, &game)
+	var game repository.Game
+	if err := ctx.ShouldBindJSON(&game); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
+		return
+	}
+
+	game.ID, err = primitive.ObjectIDFromHex(gameID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
+		return
+	}
+
+	result, err := gs.gamesRepository.UpdateGame(ctx, game)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -96,21 +116,23 @@ func (gs GamesService) UpdateGame(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "game not found"})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"game": game})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Game updated successfully"})
 }
 
 func (gs GamesService) DeleteGame(ctx *gin.Context) {
-	var input struct {
-		ID primitive.ObjectID `json:"id"`
-	}
-
-	err := ctx.BindJSON(&input)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+	gameID := ctx.Param("id")
+	if gameID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
 		return
 	}
 
-	result, err := gs.gamesRepository.DeleteGame(ctx, input.ID)
+	objID, err := primitive.ObjectIDFromHex(gameID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
+		return
+	}
+
+	result, err := gs.gamesRepository.DeleteGame(ctx, objID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -121,5 +143,5 @@ func (gs GamesService) DeleteGame(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "game deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Game deleted successfully"})
 }
