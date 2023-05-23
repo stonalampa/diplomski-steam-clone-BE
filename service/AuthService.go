@@ -49,7 +49,7 @@ func (as AuthService) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.Email, true, user.IsAdmin)
+	token, err := utils.GenerateToken(user.ID.Hex(), user.Email, true, user.IsAdmin)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,7 +81,7 @@ func (as AuthService) AdminLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(input.Email, true, user.IsAdmin)
+	token, err := utils.GenerateToken(user.ID.Hex(), input.Email, true, user.IsAdmin)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
