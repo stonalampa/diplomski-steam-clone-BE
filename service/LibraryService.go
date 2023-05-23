@@ -25,10 +25,8 @@ func (ls *LibraryService) CreateLibraryRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Assign a new ObjectID to the record
 	libraryRecord.ID = primitive.NewObjectID()
 
-	// Insert the record into the database
 	result, err := ls.libraryRepository.CreateLibraryRecord(ctx, &libraryRecord)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -68,13 +66,11 @@ func (ls *LibraryService) UpdateLibraryRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Ensure that the record ID is valid
 	if libraryRecord.ID.IsZero() {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
 		return
 	}
 
-	// Update the record in the database
 	result, err := ls.libraryRepository.UpdateLibraryRecord(ctx, libraryRecord)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -102,7 +98,6 @@ func (ls *LibraryService) DeleteLibraryRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Delete the record from the database
 	result, err := ls.libraryRepository.DeleteLibraryRecord(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -114,6 +109,5 @@ func (ls *LibraryService) DeleteLibraryRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Return success message if the record was deleted
 	ctx.JSON(http.StatusOK, gin.H{"message": "record deleted successfully"})
 }

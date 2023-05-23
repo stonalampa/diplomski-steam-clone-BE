@@ -25,10 +25,8 @@ func (rs *ReviewsService) CreateReviewRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Assign a new ObjectID to the record
 	reviewRecord.ID = primitive.NewObjectID()
 
-	// Insert the record into the database
 	result, err := rs.reviewsRepository.CreateReview(ctx, &reviewRecord)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -68,13 +66,11 @@ func (rs *ReviewsService) UpdateReviewRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Ensure that the record ID is valid
 	if reviewRecord.ID.IsZero() {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
 		return
 	}
 
-	// Update the record in the database
 	result, err := rs.reviewsRepository.UpdateReview(ctx, &reviewRecord)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -102,7 +98,6 @@ func (rs *ReviewsService) DeleteReviewRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Delete the record from the database
 	result, err := rs.reviewsRepository.DeleteReview(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -114,6 +109,5 @@ func (rs *ReviewsService) DeleteReviewRecord(ctx *gin.Context) {
 		return
 	}
 
-	// Return success message if the record was deleted
 	ctx.JSON(http.StatusOK, gin.H{"message": "record deleted successfully"})
 }

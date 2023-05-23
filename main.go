@@ -91,6 +91,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	db := client.Database(viper.GetString("name"))
 
 	if viper.GetBool("seed") {

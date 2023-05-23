@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"main/repository"
 	"net/http"
 	"strconv"
@@ -31,8 +30,7 @@ func (gs GamesService) CreateGame(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	fmt.Printf("%v", game)
-	fmt.Printf("%v", insertedGame)
+
 	ctx.JSON(http.StatusOK, gin.H{"game": insertedGame})
 }
 
