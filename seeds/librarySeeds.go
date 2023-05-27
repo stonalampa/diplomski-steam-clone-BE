@@ -9,6 +9,12 @@ import (
 
 var libraryRecords = []repo.LibraryRecord{
 	{
+		ID:          utils.GenerateId("63bd6bd756fa7318db852012"),
+		UserId:      utils.GenerateId("63bd69c3b2058767688d3d22"),
+		GameIds:     []primitive.ObjectID{utils.GenerateId("63bed8174d991d50de422d6b"), utils.GenerateId("63bed81ec1bd88d167f66a8f")},
+		WishlistIds: []primitive.ObjectID{utils.GenerateId("63bed80f04bedac5324c421a")},
+	},
+	{
 		ID:          utils.GenerateId("63bd6bd756fa7318db852016"),
 		UserId:      utils.GenerateId("63bd69c3b2058767688d3d94"),
 		GameIds:     []primitive.ObjectID{utils.GenerateId("63bed8174d991d50de422d6b"), utils.GenerateId("63bed81ec1bd88d167f66a8f")},

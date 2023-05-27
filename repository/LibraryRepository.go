@@ -12,7 +12,7 @@ import (
 
 type LibraryRepository interface {
 	CreateLibraryRecord(ctx context.Context, libraryRecord *LibraryRecord) (*mongo.InsertOneResult, error)
-	GetLibraryRecord(ctx context.Context, id primitive.ObjectID) (LibraryRecord, error)
+	GetLibraryRecord(ctx context.Context, userId primitive.ObjectID) (LibraryRecord, error)
 	UpdateLibraryRecord(ctx context.Context, data LibraryRecord) (*mongo.UpdateResult, error)
 	DeleteLibraryRecord(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropLibraryRecords(ctx context.Context)
@@ -39,9 +39,9 @@ func (repo *libraryRepository) CreateLibraryRecord(ctx context.Context, libraryR
 	return result, err
 }
 
-func (repo *libraryRepository) GetLibraryRecord(ctx context.Context, id primitive.ObjectID) (LibraryRecord, error) {
+func (repo *libraryRepository) GetLibraryRecord(ctx context.Context, userId primitive.ObjectID) (LibraryRecord, error) {
 	var libRecord LibraryRecord
-	filter := bson.D{primitive.E{Key: "_id", Value: id}}
+	filter := bson.D{primitive.E{Key: "userId", Value: userId}}
 	err := repo.db.Collection("library").FindOne(ctx, filter).Decode(&libRecord)
 	if err != nil {
 		return LibraryRecord{}, err
