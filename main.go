@@ -105,7 +105,7 @@ func main() {
 		gamesService := service.NewGamesService(gamesRepo)
 
 		libraryRepo := repository.NewLibraryRepository(db)
-		libraryService := service.NewLibraryService(libraryRepo)
+		libraryService := service.NewLibraryService(libraryRepo, gamesRepo)
 
 		reviewRepo := repository.NewReviewsRepository(db)
 		reviewService := service.NewReviewsService(reviewRepo)

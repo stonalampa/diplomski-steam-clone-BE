@@ -13,7 +13,7 @@ import (
 type LibraryRepository interface {
 	CreateLibraryRecord(ctx context.Context, libraryRecord *LibraryRecord) (*mongo.InsertOneResult, error)
 	GetLibraryRecord(ctx context.Context, userId primitive.ObjectID) (LibraryRecord, error)
-	UpdateLibraryRecord(ctx context.Context, data LibraryRecord) (*mongo.UpdateResult, error)
+	UpdateLibraryRecord(ctx context.Context, libraryRecord *LibraryRecord, remove bool) (*mongo.UpdateResult, error)
 	DeleteLibraryRecord(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	DropLibraryRecords(ctx context.Context)
 	CreateIndices(ctx context.Context)
@@ -50,13 +50,28 @@ func (repo *libraryRepository) GetLibraryRecord(ctx context.Context, userId prim
 	return libRecord, nil
 }
 
-func (repo *libraryRepository) UpdateLibraryRecord(ctx context.Context, data LibraryRecord) (*mongo.UpdateResult, error) {
-	res, err := repo.db.Collection("library").UpdateByID(ctx, data.ID, data)
-	if err != nil {
-		return &mongo.UpdateResult{}, err
+func (repo *libraryRepository) UpdateLibraryRecord(ctx context.Context, libraryRecord *LibraryRecord, remove bool) (*mongo.UpdateResult, error) {
+	filter := bson.M{"_id": libraryRecord.ID, "userId": libraryRecord.UserId}
+	update := bson.M{}
+
+	if len(libraryRecord.GameIds) > 0 {
+		if remove {
+			update["$pull"] = bson.M{"gameIds": bson.M{"$in": libraryRecord.GameIds}}
+		} else {
+			update["$addToSet"] = bson.M{"gameIds": bson.M{"$each": libraryRecord.GameIds}}
+		}
 	}
 
-	return res, nil
+	if len(libraryRecord.WishlistIds) > 0 {
+		if remove {
+			update["$pull"] = bson.M{"wishlistIds": bson.M{"$in": libraryRecord.WishlistIds}}
+		} else {
+			update["$addToSet"] = bson.M{"wishlistIds": bson.M{"$each": libraryRecord.WishlistIds}}
+		}
+	}
+
+	result, err := repo.db.Collection("library").UpdateOne(ctx, filter, update)
+	return result, err
 }
 
 func (repo *libraryRepository) DeleteLibraryRecord(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {

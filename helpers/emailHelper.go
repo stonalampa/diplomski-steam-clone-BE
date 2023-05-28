@@ -87,3 +87,29 @@ func ConfirmationEmail(toEmail, htmlFilePath string) bool {
 	body := bodyBuilder.String()
 	return sendEmail(toEmail, "Steam Clone - Account confirmation email", body)
 }
+
+func GenerateSuccessfulPurchaseEmail(toEmail, title, price, htmlFilePath string) bool {
+	fileContent, err := os.ReadFile(htmlFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmpl, err := template.New("emailTemplate").Parse(string(fileContent))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	var bodyBuilder strings.Builder
+	err = tmpl.Execute(&bodyBuilder, struct{ Title, Price string }{
+		Title: title,
+		Price: price,
+	})
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	body := bodyBuilder.String()
+	return sendEmail(toEmail, "Steam Clone - Congratulations on Your Purchase", body)
+}
