@@ -12,11 +12,15 @@ import (
 )
 
 type UserService struct {
-	usersRepository repository.UsersRepository
+	usersRepository   repository.UsersRepository
+	libraryRepository repository.LibraryRepository
 }
 
-func NewUsersService(usersRepository repository.UsersRepository) *UserService {
-	return &UserService{usersRepository: usersRepository}
+func NewUsersService(usersRepository repository.UsersRepository, libraryRepository repository.LibraryRepository) *UserService {
+	return &UserService{
+		usersRepository:   usersRepository,
+		libraryRepository: libraryRepository,
+	}
 }
 
 func (us UserService) GetUser(ctx *gin.Context) {
@@ -69,6 +73,18 @@ func (us UserService) CreateUser(ctx *gin.Context) {
 	user.IsActive = false
 
 	insertedUser, err := us.usersRepository.CreateUser(ctx, &user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	libraryRecord := &repository.LibraryRecord{
+		ID:          primitive.NewObjectID(),
+		UserId:      insertedUser.InsertedID.(primitive.ObjectID),
+		GameIds:     []primitive.ObjectID{},
+		WishlistIds: []primitive.ObjectID{},
+	}
+	_, err = us.libraryRepository.CreateLibraryRecord(ctx, libraryRecord)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return

@@ -97,17 +97,17 @@ func main() {
 	if viper.GetBool("seed") {
 		seeds.Seeder(db)
 	} else {
+		// * Repos
 		userRepo := repository.NewUsersRepository(db)
-		authService := service.NewAuthService(userRepo)
-		userService := service.NewUsersService(userRepo)
-
 		gamesRepo := repository.NewGamesRepository(db)
-		gamesService := service.NewGamesService(gamesRepo)
-
 		libraryRepo := repository.NewLibraryRepository(db)
-		libraryService := service.NewLibraryService(libraryRepo, gamesRepo)
-
 		reviewRepo := repository.NewReviewsRepository(db)
+
+		// * Services
+		authService := service.NewAuthService(userRepo)
+		userService := service.NewUsersService(userRepo, libraryRepo)
+		gamesService := service.NewGamesService(gamesRepo)
+		libraryService := service.NewLibraryService(libraryRepo, gamesRepo)
 		reviewService := service.NewReviewsService(reviewRepo)
 
 		// * Create gin router and set trusted proxy
