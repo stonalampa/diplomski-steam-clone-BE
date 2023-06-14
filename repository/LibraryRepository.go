@@ -55,6 +55,10 @@ func (repo *libraryRepository) UpdateLibraryRecord(ctx context.Context, libraryR
 	update := bson.M{}
 
 	if len(libraryRecord.GameIds) > 0 {
+		if !remove {
+			update["$pull"] = bson.M{"wishlistIds": bson.M{"$in": libraryRecord.GameIds}}
+		}
+
 		if remove {
 			update["$pull"] = bson.M{"gameIds": bson.M{"$in": libraryRecord.GameIds}}
 		} else {
@@ -63,6 +67,8 @@ func (repo *libraryRepository) UpdateLibraryRecord(ctx context.Context, libraryR
 	}
 
 	if len(libraryRecord.WishlistIds) > 0 {
+		update["$pull"] = bson.M{"gameIds": bson.M{"$in": libraryRecord.WishlistIds}}
+
 		if remove {
 			update["$pull"] = bson.M{"wishlistIds": bson.M{"$in": libraryRecord.WishlistIds}}
 		} else {

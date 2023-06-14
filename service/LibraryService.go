@@ -93,19 +93,16 @@ func (ls *LibraryService) UpdateLibraryRecord(ctx *gin.Context) {
 	updateGameIds := make([]primitive.ObjectID, 0)
 	updateWishlistIds := make([]primitive.ObjectID, 0)
 
-	// Check if gameIds field is provided in the request
 	sendEmail := false
 	if len(libraryRecord.GameIds) > 0 {
 		updateGameIds = libraryRecord.GameIds
 		sendEmail = true
 	}
 
-	// Check if wishlistIds field is provided in the request
 	if len(libraryRecord.WishlistIds) > 0 {
 		updateWishlistIds = libraryRecord.WishlistIds
 	}
 
-	// Create a new LibraryRecord with only the ID and UserID
 	updatedLibraryRecord := &repository.LibraryRecord{
 		ID:          libraryRecord.ID,
 		UserId:      libraryRecord.UserId,
