@@ -13,7 +13,7 @@ Change into the project directory: $ cd diplomski-steam-clonse-BE
 There are 2 flags:
 1. local || deployment <- this will choose if we start the local server or we connect to deployed env
 2. true || false <- true will run seeding, false will run the server
-3.
+
 ## Start server with
 go run main.go local (or deployment) false
 
